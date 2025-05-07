@@ -1,0 +1,8 @@
+# no project files
+.idea/*
+*.swp
+
+# no images
+**/*.jpg
+**/*.png
+
