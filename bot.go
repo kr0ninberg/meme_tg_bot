@@ -25,9 +25,17 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
+	keyboard := tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("+"),
+			tgbotapi.NewKeyboardButton("-"),
+		),
+	)
+
 	for update := range updates {
 		if update.Message != nil {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Ты написал: "+update.Message.Text)
+			msg.ReplyMarkup = keyboard
 			bot.Send(msg)
 		}
 	}
