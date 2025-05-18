@@ -34,9 +34,11 @@ func main() {
 
 	for update := range updates {
 		if update.Message != nil {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Ты написал: "+update.Message.Text)
-			msg.ReplyMarkup = keyboard
-			bot.Send(msg)
+			photo := tgbotapi.NewPhoto(update.Message.Chat.ID, tgbotapi.FilePath("1.jpg"))
+			photo.Caption = "Ты написал: " + update.Message.Text
+			photo.ParseMode = "Markdown" // or "HTML" if needed
+			photo.ReplyMarkup = keyboard
+			bot.Send(photo)
 		}
 	}
 }
