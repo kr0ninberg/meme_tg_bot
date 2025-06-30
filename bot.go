@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 
@@ -27,15 +29,27 @@ func main() {
 
 	keyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("+"),
-			tgbotapi.NewKeyboardButton("-"),
+			tgbotapi.NewKeyboardButton("next"),
 		),
 	)
+	connStr := "user=memes_user dbname=memes sslmode=disable password=memes_pass"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	for update := range updates {
 		if update.Message != nil {
-			photo := tgbotapi.NewPhoto(update.Message.Chat.ID, tgbotapi.FilePath("1.jpg"))
-			photo.Caption = "Ты написал: " + update.Message.Text
+
+			var filename string
+			err = db.QueryRow("SELECT filename FROM memes_filenames ORDER BY RANDOM() LIMIT 1").Scan(&filename)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			photo := tgbotapi.NewPhoto(update.Message.Chat.ID, tgbotapi.FilePath("memes/"+filename))
+			//photo.Caption = "Ты написал: " + update.Message.Text
 			photo.ParseMode = "Markdown" // or "HTML" if needed
 			photo.ReplyMarkup = keyboard
 			bot.Send(photo)
